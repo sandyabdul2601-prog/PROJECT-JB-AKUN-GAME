@@ -1,4 +1,12 @@
-<div class="card p-4">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="card p-4">
     <h4>Order #{{ $order->id }}</h4>
     <p>Harga: Rp {{ number_format($order->price) }}</p>
     <p>Fee MM: Rp {{ number_format($order->fee_mm) }}</p>
@@ -20,3 +28,5 @@
         <div class="alert alert-warning">Status: Transaksi Di-Refund</div>
     @endif
 </div>
+</body>
+</html>
