@@ -1,0 +1,20 @@
+// Tambahkan di routes/web.php
+use App\Http\Controllers\SellerController;
+
+Route::middleware('auth')->prefix('seller')->name('seller.')->group(function () {
+    Route::get('/dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
+
+    Route::get('/products', [SellerController::class, 'products'])->name('products');
+    Route::get('/products/create', [SellerController::class, 'createProduct'])->name('products.create');
+    Route::post('/products', [SellerController::class, 'storeProduct'])->name('products.store');
+    Route::get('/products/{product}/edit', [SellerController::class, 'editProduct'])->name('products.edit');
+    Route::put('/products/{product}', [SellerController::class, 'updateProduct'])->name('products.update');
+    Route::delete('/products/{product}', [SellerController::class, 'destroyProduct'])->name('products.destroy');
+
+    Route::get('/orders', [SellerController::class, 'orders'])->name('orders');
+    Route::get('/orders/{order}', [SellerController::class, 'showOrder'])->name('orders.show');
+    Route::put('/orders/{order}/status', [SellerController::class, 'updateOrderStatus'])->name('orders.status');
+
+    Route::get('/wallet', [SellerController::class, 'wallet'])->name('wallet');
+    Route::post('/wallet/withdraw', [SellerController::class, 'withdrawal'])->name('wallet.withdraw');
+});
