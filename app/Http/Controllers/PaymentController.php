@@ -3,32 +3,48 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
-use App\Models\Payment;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
-    // Pembeli upload bukti bayar
-    public function uploadPayment(Request $request, $orderId)
+    /**
+     * Upload Bukti Pembayaran (Pembeli)
+     * Transisi Status: waiting_payment -> payment_received
+     */
+    public function uploadPayment(Request $request, $id)
     {
-        $path = $request->file('proof')->store('payments', 'public');
-        
-        Payment::create([
-            'order_id' => $orderId,
-            'proof_image' => $path
+        $order = Order::findOrFail($id);
+
+        if ($order->status !== 'waiting_payment') {
+            return redirect()->back()->with('error', 'Status transaksi tidak valid untuk upload pembayaran.');
+        }
+
+        // Contoh update status setelah bukti di-upload
+        $order->update([
+            'status' => 'payment_received',
         ]);
 
-        Order::where('id', $orderId)->update(['status' => 'payment_received']);
-
-        return back()->with('success', 'Bukti terupload, menunggu konfirmasi MM.');
+        return redirect()->route('order.show', $order->id)
+                         ->with('success', 'Bukti pembayaran berhasil di-upload. Menunggu verifikasi Middleman.');
     }
 
-    // MM/Admin verifikasi uang sudah masuk
-    public function confirmPaymentByMM($orderId)
+    /**
+     * Konfirmasi Pembayaran Diterima MM (Admin/Middleman)
+     * Transisi Status: payment_received -> account_received (atau checking)
+     */
+    public function confirmPaymentByMM($id)
     {
-        $order = Order::findOrFail($orderId);
-        $order->update(['status' => 'waiting_account']);
+        $order = Order::findOrFail($id);
 
-        return back()->with('success', 'Dana terverifikasi. Menunggu seller kirim akun.');
+        if ($order->status !== 'payment_received') {
+            return redirect()->back()->with('error', 'Pembayaran belum di-upload atau sudah dikonfirmasi.');
+        }
+
+        $order->update([
+            'status' => 'account_received', // Atau 'checking'
+        ]);
+
+        return redirect()->route('order.show', $order->id)
+                         ->with('success', 'Pembayaran berhasil diverifikasi oleh Middleman! Seller dapat menyerahkan akun.');
     }
 }

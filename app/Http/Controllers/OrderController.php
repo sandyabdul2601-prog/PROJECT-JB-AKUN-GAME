@@ -4,48 +4,60 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
-    // 1. Pembeli Buat Order
     public function createOrder(Request $request)
     {
-        $price = $request->price;
-        $feeMM = 25000; // Contoh nominal fee fix/persentase
-        
-        $order = Order::create([
-            'buyer_id' => auth()->id() ?? 1, // Fallback ke ID 1 jika belum login
-            'seller_id' => $request->seller_id,
-            'listing_id' => $request->listing_id,
-            'price' => $price,
-            'fee_mm' => $feeMM,
-            'seller_amount' => $price - $feeMM,
-            'status' => 'waiting_payment'
+        $request->validate([
+            'seller_id'  => 'required|integer',
+            'listing_id' => 'required|integer',
+            'price'      => 'required|numeric|min:1000',
         ]);
 
-        return redirect()->route('order.show', $order->id);
+        $price = $request->input('price');
+        $feeMm = $price * 0.05; 
+        $sellerAmount = $price - $feeMm;
+
+        $buyerId = Auth::id() ?? 1;
+
+        $order = Order::create([
+            'buyer_id'      => $buyerId,
+            'seller_id'     => $request->input('seller_id'),
+            'listing_id'    => $request->input('listing_id'),
+            'price'         => $price,
+            'fee_mm'        => $feeMm,
+            'seller_amount' => $sellerAmount,
+            'status'        => 'waiting_payment',
+        ]);
+
+        return redirect()->route('order.show', $order->id)
+                         ->with('success', 'Transaksi berhasil dibuat! Silakan upload bukti pembayaran.');
     }
 
-    // 2. Menampilkan Detail Order ke Tampilan Blade
     public function show($id)
     {
-        $order = Order::findOrFail($id);
+        // Panggil relasi secara opsional
+        $order = Order::with(['accountData', 'complaint'])->findOrFail($id);
 
-        return view('orders.show', compact('order'));
+        // Pastikan nama view sesuai file resources/views/show.blade.php
+        return view('show', compact('order'));
     }
 
-    // 3. Pembeli Konfirmasi Sudah Cek Akun & Selesai
     public function completeOrder($id)
     {
         $order = Order::findOrFail($id);
-        
-        // Cek autentikasi, jika testing baypass validasi buyer
-        if (auth()->check() && auth()->id() !== $order->buyer_id) {
-            return back()->with('error', 'Akses ditolak.');
+
+        if (!in_array($order->status, ['checking', 'account_received'])) {
+            return redirect()->back()->with('error', 'Transaksi belum bisa diselesaikan pada status ini.');
         }
 
-        $order->update(['status' => 'completed']);
-        
-        return back()->with('success', 'Transaksi selesai! Dana diteruskan ke seller.');
+        $order->update([
+            'status' => 'completed',
+        ]);
+
+        return redirect()->route('order.show', $order->id)
+                         ->with('success', 'Transaksi telah selesai! Uang akan diteruskan ke Penjual.');
     }
 }

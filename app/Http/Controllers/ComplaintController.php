@@ -5,34 +5,45 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Complaint;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ComplaintController extends Controller
 {
-    // Pembeli mengajukan komplain
-    public function store(Request $request, $orderId)
+    public function store(Request $request, $id)
     {
-        $path = $request->file('evidence') ? $request->file('evidence')->store('complaints', 'public') : null;
-
-        Complaint::create([
-            'order_id' => $orderId,
-            'user_id' => auth()->id(),
-            'reason' => $request->reason,
-            'evidence_image' => $path
+        $request->validate([
+            'reason' => 'required|string|min:10',
         ]);
 
-        Order::where('id', $orderId)->update(['status' => 'complaint']);
+        $order = Order::findOrFail($id);
 
-        return back()->with('success', 'Komplain dikirim. Dana ditahan oleh MM.');
+        $order->update([
+            'status' => 'complaint',
+        ]);
+
+        Complaint::create([
+            'order_id' => $order->id,
+            'user_id'  => Auth::id() ?? $order->buyer_id,
+            'reason'   => $request->reason,
+            'status'   => 'open',
+        ]);
+
+        return redirect()->route('order.show', $order->id)
+                         ->with('error', 'Komplain berhasil diajukan. Tim Middleman akan meninjau kendala ini.');
     }
 
-    // MM Menyetujui Refund
-    public function processRefund($orderId)
+    /**
+     * Memproses refund dana ke pembeli (Method penambahan untuk route complaint.refund)
+     */
+    public function processRefund($id)
     {
-        $order = Order::findOrFail($orderId);
-        $order->update(['status' => 'refund']);
+        $order = Order::findOrFail($id);
 
-        // Logika pengembalian dana ke buyer...
+        $order->update([
+            'status' => 'refund',
+        ]);
 
-        return back()->with('success', 'Transaksi dibatalkan dan dana di-refund.');
+        return redirect()->route('order.show', $order->id)
+                         ->with('success', 'Transaksi berhasil di-refund.');
     }
 }
