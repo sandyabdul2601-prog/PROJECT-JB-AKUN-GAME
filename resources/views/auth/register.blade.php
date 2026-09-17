@@ -1,102 +1,118 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="id">
 
-@section('content')
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<div class="auth-container">
+    <title>Register - Jual Beli Akun</title>
 
-    <div class="auth-card">
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+</head>
 
-        <h1>Buat Akun</h1>
+<body>
 
-        <p>Daftar untuk mulai menggunakan GameMarket.</p>
+    <div class="auth-container">
 
-        @if ($errors->any())
+        <div class="auth-box">
 
-            <div class="alert">
+            <h1>Daftar</h1>
 
-                <ul>
+            <p class="subtitle">
+                Buat akun baru
+            </p>
+
+            {{-- Menampilkan error --}}
+            @if ($errors->any())
+                <div class="error">
                     @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
+                        <p>{{ $error }}</p>
                     @endforeach
-                </ul>
+                </div>
+            @endif
 
-            </div>
+            {{-- Form Register --}}
+            <form method="POST" action="{{ route('register') }}">
 
-        @endif
+                @csrf
 
+                {{-- Nama --}}
+                <div class="form-group">
+                    <label for="name">Nama</label>
 
-        <form action="/register" method="POST">
+                    <input
+                        id="name"
+                        type="text"
+                        name="name"
+                        value="{{ old('name') }}"
+                        placeholder="Masukkan nama"
+                        required
+                        autofocus
+                    >
+                </div>
 
-            @csrf
+                {{-- Email --}}
+                <div class="form-group">
+                    <label for="email">Email</label>
 
-            <div class="form-group">
+                    <input
+                        id="email"
+                        type="email"
+                        name="email"
+                        value="{{ old('email') }}"
+                        placeholder="Masukkan email"
+                        required
+                    >
+                </div>
 
-                <label>Nama</label>
+                {{-- Password --}}
+                <div class="form-group">
+                    <label for="password">Password</label>
 
-                <input
-                    type="text"
-                    name="name"
-                    value="{{ old('name') }}"
-                    required
-                >
+                    <input
+                        id="password"
+                        type="password"
+                        name="password"
+                        placeholder="Minimal 8 karakter"
+                        required
+                    >
+                </div>
 
-            </div>
+                {{-- Konfirmasi Password --}}
+                <div class="form-group">
+                    <label for="password_confirmation">
+                        Konfirmasi Password
+                    </label>
 
+                    <input
+                        id="password_confirmation"
+                        type="password"
+                        name="password_confirmation"
+                        placeholder="Ulangi password"
+                        required
+                    >
+                </div>
 
-            <div class="form-group">
+                {{-- Tombol --}}
+                <button type="submit">
+                    Daftar
+                </button>
 
-                <label>Email</label>
+            </form>
 
-                <input
-                    type="email"
-                    name="email"
-                    value="{{ old('email') }}"
-                    required
-                >
+            {{-- Link Login --}}
+            <p class="bottom-text">
+                Sudah punya akun?
 
-            </div>
+                <a href="{{ route('login') }}">
+                    Login
+                </a>
+            </p>
 
-
-            <div class="form-group">
-
-                <label>Password</label>
-
-                <input
-                    type="password"
-                    name="password"
-                    required
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label>Konfirmasi Password</label>
-
-                <input
-                    type="password"
-                    name="password_confirmation"
-                    required
-                >
-
-            </div>
-
-
-            <button type="submit" class="btn btn-full">
-                Daftar
-            </button>
-
-        </form>
-
-
-        <p class="auth-footer">
-            Sudah punya akun?
-            <a href="/login">Login</a>
-        </p>
+        </div>
 
     </div>
 
-</div>
+</body>
 
-@endsection
+</html>
