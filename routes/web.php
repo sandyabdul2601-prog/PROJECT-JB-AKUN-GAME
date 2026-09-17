@@ -9,25 +9,6 @@ use App\Http\Controllers\ComplaintController;
 Route::get('/', function () {
     return view('welcome');
 });
-//LOGIN
-Route::get('/login', [AuthController::class, 'showLogin'])
-    ->name('login');
-
-Route::post('/login', [AuthController::class, 'login']);
-
-// REGISTER
-Route::get('/register', [AuthController::class, 'showRegister'])
-    ->name('register');
-
-//DASBOARD
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware('auth')->name('dashboard');
-
-Route::post('/register', [AuthController::class, 'register']);
-// LOGOUT
-Route::post('/logout', [AuthController::class, 'logout'])
-    ->name('logout');
 
 // Route Transaksi (Order)
 Route::post('/order/create', [OrderController::class, 'createOrder'])->name('order.create');
