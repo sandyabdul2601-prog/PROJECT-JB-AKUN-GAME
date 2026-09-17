@@ -9,13 +9,15 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    // Menampilkan halaman login
+    // =========================
+    // LOGIN
+    // =========================
+
     public function showLogin()
     {
         return view('auth.login');
     }
 
-    // Proses login
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -24,6 +26,7 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
+
             $request->session()->regenerate();
 
             return redirect()->route('dashboard');
@@ -34,25 +37,39 @@ class AuthController extends Controller
         ])->withInput();
     }
 
-    // Menampilkan halaman register
+
+    // =========================
+    // REGISTER
+    // =========================
+
     public function showRegister()
     {
         return view('auth.register');
     }
 
-    // Proses register
     public function register(Request $request)
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
+
+            'email' => [
+                'required',
+                'email',
+                'unique:users,email'
+            ],
+
+            'password' => [
+                'required',
+                'min:8',
+                'confirmed'
+            ],
         ]);
 
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'role' => 'user',
         ]);
 
         Auth::login($user);
@@ -62,12 +79,17 @@ class AuthController extends Controller
         return redirect()->route('dashboard');
     }
 
-    // Logout
+
+    // =========================
+    // LOGOUT
+    // =========================
+
     public function logout(Request $request)
     {
         Auth::logout();
 
         $request->session()->invalidate();
+
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
