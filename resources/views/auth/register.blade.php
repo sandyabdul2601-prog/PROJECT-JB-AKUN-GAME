@@ -22,6 +22,7 @@
                 Buat akun baru
             </p>
 
+            {{-- Menampilkan error --}}
             @if ($errors->any())
                 <div class="error">
                     @foreach ($errors->all() as $error)
@@ -30,26 +31,32 @@
                 </div>
             @endif
 
-            <form action="{{ route('register') }}" method="POST">
+            {{-- Form Register --}}
+            <form method="POST" action="{{ route('register') }}">
 
                 @csrf
 
+                {{-- Nama --}}
                 <div class="form-group">
-                    <label>Nama</label>
+                    <label for="name">Nama</label>
 
                     <input
+                        id="name"
                         type="text"
                         name="name"
                         value="{{ old('name') }}"
                         placeholder="Masukkan nama"
                         required
+                        autofocus
                     >
                 </div>
 
+                {{-- Email --}}
                 <div class="form-group">
-                    <label>Email</label>
+                    <label for="email">Email</label>
 
                     <input
+                        id="email"
                         type="email"
                         name="email"
                         value="{{ old('email') }}"
@@ -58,10 +65,12 @@
                     >
                 </div>
 
+                {{-- Password --}}
                 <div class="form-group">
-                    <label>Password</label>
+                    <label for="password">Password</label>
 
                     <input
+                        id="password"
                         type="password"
                         name="password"
                         placeholder="Minimal 8 karakter"
@@ -69,10 +78,14 @@
                     >
                 </div>
 
+                {{-- Konfirmasi Password --}}
                 <div class="form-group">
-                    <label>Konfirmasi Password</label>
+                    <label for="password_confirmation">
+                        Konfirmasi Password
+                    </label>
 
                     <input
+                        id="password_confirmation"
                         type="password"
                         name="password_confirmation"
                         placeholder="Ulangi password"
@@ -80,14 +93,17 @@
                     >
                 </div>
 
+                {{-- Tombol --}}
                 <button type="submit">
                     Daftar
                 </button>
 
             </form>
 
+            {{-- Link Login --}}
             <p class="bottom-text">
                 Sudah punya akun?
+
                 <a href="{{ route('login') }}">
                     Login
                 </a>
