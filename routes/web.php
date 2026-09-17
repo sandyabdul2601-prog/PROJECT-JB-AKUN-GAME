@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ComplaintController;
@@ -10,8 +9,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route Transaksi (Order)
+// ROUTE TRANSAKSI (Dibuat Publik Sementara untuk Testing Tanpa Login)
+
+// 1. Tampilan Halaman/Form Buat Order (Method GET agar bisa dibuka di browser)
+Route::get('/order/create', function () {
+    return view('order_create');
+})->name('order.create.view');
+
+// 2. Eksekusi Buat Order (Method POST saat tombol diklik)
 Route::post('/order/create', [OrderController::class, 'createOrder'])->name('order.create');
+
+// 3. Detail Order & Penyelesaian Transaksi
 Route::get('/order/{id}', [OrderController::class, 'show'])->name('order.show');
 Route::post('/order/{id}/complete', [OrderController::class, 'completeOrder'])->name('order.complete');
 
@@ -22,21 +30,3 @@ Route::post('/order/{id}/confirm-payment', [PaymentController::class, 'confirmPa
 // Route Komplain & Refund
 Route::post('/order/{id}/complaint', [ComplaintController::class, 'store'])->name('complaint.store');
 Route::post('/order/{id}/refund', [ComplaintController::class, 'processRefund'])->name('complaint.refund');
-
-// Route Dummy Halaman Login (Persiapan Tim Auth)
-Route::get('/login', function () {
-    return 'Halaman Login (Belum dibuat oleh tim autentikasi)';
-})->name('login');
-
-// Route Halaman Testing Beli
-Route::get('/test-buy', function () {
-    return '
-        <form action="' . route('order.create') . '" method="POST">
-            ' . csrf_field() . '
-            <input type="hidden" name="seller_id" value="2">
-            <input type="hidden" name="listing_id" value="1">
-            <input type="hidden" name="price" value="150000">
-            <button type="submit">Uji Coba Beli (POST)</button>
-        </form>
-    ';
-});

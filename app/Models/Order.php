@@ -9,13 +9,21 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'buyer_id',
-        'seller_id',
-        'listing_id',
-        'price',
-        'fee_mm',
-        'seller_amount',
-        'status',
-    ];
+    protected $guarded = [];
+
+    /**
+     * Relasi ke data akun game
+     */
+    public function accountData()
+    {
+        return $this->hasOne(AccountData::class, 'order_id');
+    }
+
+    /**
+     * Relasi ke data komplain
+     */
+    public function complaint()
+    {
+        return $this->hasOne(Complaint::class, 'order_id');
+    }
 }
