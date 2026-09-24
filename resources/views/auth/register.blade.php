@@ -202,139 +202,144 @@
 
 </head>
 
-
 <body>
 
+    <div class="auth-card">
 
-<div class="auth-card">
+        <div class="logo">
+            JB
+        </div>
 
-    <div class="logo">
-        JB
+        <h1>
+            Buat Akun
+        </h1>
+
+        <div class="subtitle">
+            Daftar untuk mulai jual dan beli akun game.
+        </div>
+
+        @if ($errors->any())
+
+            <div class="error">
+
+                <ul>
+
+                    @foreach ($errors->all() as $error)
+
+                        <li>{{ $error }}</li>
+
+                    @endforeach
+
+                </ul>
+
+            </div>
+
+        @endif
+
+        <form action="/register" method="POST">
+
+            @csrf
+
+            <div class="form-group">
+
+                <label for="name">
+                    Nama
+                </label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value="{{ old('name') }}"
+                    placeholder="Nama kamu"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    value="{{ old('username') }}"
+                    placeholder="Username kamu"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value="{{ old('email') }}"
+                    placeholder="email@gmail.com"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Minimal 6 karakter"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="password_confirmation">
+                    Konfirmasi Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password_confirmation"
+                    name="password_confirmation"
+                    placeholder="Ulangi password"
+                    required
+                >
+
+            </div>
+
+            <button type="submit" class="btn">
+                DAFTAR
+            </button>
+
+        </form>
+
+        <div class="bottom">
+
+            Sudah punya akun?
+
+            <a href="/login">
+                Login
+            </a>
+
+        </div>
+
     </div>
-
-
-    <h1>
-        Buat Akun
-    </h1>
-
-    <div class="subtitle">
-        Daftar untuk mulai jual dan beli akun game.
-    </div>
-
-
-    @if ($errors->any())
-
-        <div class="error">
-
-            @foreach ($errors->all() as $error)
-
-                <div>
-                    {{ $error }}
-                </div>
-
-            @endforeach
-
-        </div>
-
-    @endif
-
-
-    <form
-        action="{{ route('register.store') }}"
-        method="POST"
-    >
-
-        @csrf
-
-
-        <div class="form-group">
-
-            <label>
-                Nama
-            </label>
-
-            <input
-                type="text"
-                name="name"
-                value="{{ old('name') }}"
-                placeholder="Nama kamu"
-                required
-            >
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label>
-                Email
-            </label>
-
-            <input
-                type="email"
-                name="email"
-                value="{{ old('email') }}"
-                placeholder="email@gmail.com"
-                required
-            >
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label>
-                Password
-            </label>
-
-            <input
-                type="password"
-                name="password"
-                placeholder="Minimal 6 karakter"
-                required
-            >
-
-        </div>
-
-
-        <div class="form-group">
-
-            <label>
-                Konfirmasi Password
-            </label>
-
-            <input
-                type="password"
-                name="password_confirmation"
-                placeholder="Ulangi password"
-                required
-            >
-
-        </div>
-
-
-        <button
-            type="submit"
-            class="btn"
-        >
-            DAFTAR
-        </button>
-
-    </form>
-
-
-    <div class="bottom">
-
-        Sudah punya akun?
-
-        <a href="{{ route('login') }}">
-            Login
-        </a>
-
-    </div>
-
-</div>
-
 
 </body>
 
