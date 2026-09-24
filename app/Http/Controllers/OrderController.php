@@ -12,7 +12,7 @@ class OrderController extends Controller
     {
         $request->validate([
             'seller_id'  => 'required|exists:users,id',
-            'listing_id' => 'required', // Tambahkan |exists:listings,id jika tabel listings sudah dibuat Orang 2
+            'listing_id' => 'required',
             'price'      => 'required|numeric|min:1000',
         ]);
 
@@ -21,7 +21,7 @@ class OrderController extends Controller
         $sellerAmount = $price - $feeMm;
 
         $order = Order::create([
-            'buyer_id'      => Auth::id(), // Mengambil ID pembeli yang sedang login
+            'buyer_id'      => Auth::id(),
             'seller_id'     => $request->input('seller_id'),
             'listing_id'    => $request->input('listing_id'),
             'price'         => $price,
@@ -34,5 +34,21 @@ class OrderController extends Controller
                          ->with('success', 'Transaksi berhasil dibuat!');
     }
 
-    // Method/fungsi lain milik OrderController bisa diletakkan di bawah sini
+    // TAMBAHKAN METHOD SHOW DI SINI:
+    public function show($id)
+    {
+        $order = Order::findOrFail($id);
+
+        // Arahkan ke file blade milikmu (misal: order_show.blade.php)
+        return view('order_show', compact('order')); 
+    }
+
+    // Method untuk menyelesaikan transaksi (Optional/Lanjutan)
+    public function complete($id)
+    {
+        $order = Order::findOrFail($id);
+        $order->update(['status' => 'completed']);
+
+        return redirect()->back()->with('success', 'Transaksi telah selesai!');
+    }
 }
